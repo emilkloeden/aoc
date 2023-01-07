@@ -1,11 +1,9 @@
-from .utils import get_default_year
-
-SUPPORTED_LANGUAGES = ("python", "java", "javascript")
+import aoc.utils as utils
 
 def is_valid_year(year: str):
     try:
         year = int(year)
-        return year >= 2015 and year <= get_default_year()
+        return year >= 2015 and year <= utils.get_default_year()
     except ValueError:
         return False
 
@@ -16,5 +14,3 @@ def is_valid_day(day: str):
     except ValueError:
         return False
 
-def is_valid_language(language: str):
-    return language in SUPPORTED_LANGUAGES

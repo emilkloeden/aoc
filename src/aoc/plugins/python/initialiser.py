@@ -1,7 +1,7 @@
 from pathlib import Path
 from typing import Protocol
 
-class Initialiser(Protocol):
+class InitialiserProtocol(Protocol):
     def initialise(self):
         pass
 
@@ -11,10 +11,12 @@ class Initialiser(Protocol):
     def write_file_templates(self):
         pass
 
-class PythonInitialiser(Initialiser):
-    def __init__(self, year: int, location):
+class Initialiser(InitialiserProtocol):
+    def __init__(self, year: int, location:Path=None):
         self.language = "python"
         self.year = year
+        if location is None:
+            location = Path()
         self.location = Path(location) / f"{self.year}" / self.language
 
         self.file_content = '''import argparse
@@ -58,11 +60,11 @@ if __name__ == "__main__":
 '''
 
     def initialise(self):
-        print("making dirs")
+        print("[+] Scaffolding project...")
         self.mkdirs()
-        print("made dirs")
         self.mkdotenv()
         self.write_file_templates()
+        print("[+] ...Done.")
 
     def mkdotenv(self):
         dotenv_path = self.location / ".env"
@@ -90,33 +92,3 @@ if __name__ == "__main__":
             daily_file.write_text(self.file_content.replace("XXDAYXX", f"{i}"))
         
 
-class JavaInitialiser(Initialiser):
-    def __init__(self, year, location):
-        self.language = "java"
-        self.year = year
-        self.location = Path(location) / f"{self.year}" / self.language
-
-    def initialise(self):
-        return super().initialise()
-    
-    def mkdirs(self):
-        return super().mkdirs()
-
-    def write_file_templates(self):
-        return super().write_file_templates()
-
-
-class JavaScriptInitialiser(Initialiser):
-    def __init__(self, year, location):
-        self.language = "javascript"
-        self.year = year
-        self.location = Path(location) / f"{self.year}" / self.language
-
-    def initialise(self):
-        return super().initialise()
-    
-    def mkdirs(self):
-        return super().mkdirs()
-
-    def write_file_templates(self):
-        return super().write_file_templates()

@@ -1,11 +1,12 @@
 import webbrowser
 from pathlib import Path
 
-from aoc.validations import is_valid_day, is_valid_language, is_valid_year
+from aoc.validations import is_valid_day, is_valid_year
+from .local_validations import is_valid_language
 
 
 class Opener:
-    def __init__(self):
+    def __init__(self) -> None:
         self._p = Path().absolute()
         self.day: int = None
         self.year: int = None
@@ -22,6 +23,7 @@ class Opener:
                 self.language = x.name
                 break
 
+    def open(self) -> None:
         if (self.day and self.year and self.language):
             self.url = f"https://adventofcode.com/2022/day/{self.day}"
             webbrowser.open(self.url)
