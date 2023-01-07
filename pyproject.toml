@@ -16,11 +16,17 @@ classifiers = [
     "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
 ]
-dynamic = ["dependencies"]
+dependencies = [
+    "python-dotenv == 0.21.0",
+    "requests == 2.28.1"
+]
+
 
 [project.urls]
 "Homepage" = "https://github.com/emilkloeden/aoc"
 "Bug Tracker" = "https://github.com/emilkloeden/aoc/issues"
 
-[tool.setuptools.dynamic]
-dependencies = {file = ["requirements.txt"]}
+
+
+[project.scripts]
+aoc = "aoc.__main__:main"

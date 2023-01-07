@@ -3,13 +3,14 @@ import logging
 from pathlib import Path
 
 from dotenv import load_dotenv
-from getters import Getter
-from runners import Runner
-from submitters import Submitter
-from initialisers import (JavaInitialiser, JavaScriptInitialiser,
+from aoc.getters import Getter
+from aoc.runners import Runner
+from aoc.submitters import Submitter
+from aoc.initialisers import (JavaInitialiser, JavaScriptInitialiser,
                           PythonInitialiser)
+from aoc.openers import Opener
 
-from utils import get_default_year
+from aoc.utils import get_default_year
 
 load_dotenv()
 days = list(range(1, 26))
@@ -40,6 +41,8 @@ def parse_args():
 
     submit_parser = subparsers.add_parser('submit', help="Submit an answer, requires AOC_SESSION environment variable.")
     submit_parser.add_argument('part', type=int, choices=(1,2))
+
+    open_parser = subparsers.add_parser('open', help="Submit an answer, requires AOC_SESSION environment variable.")
 
     
 
@@ -78,6 +81,9 @@ def handle_run(args):
 def handle_submit(args):
     Submitter(args.part)   
 
+def handle_open():
+    Opener()
+
 def main():
     args = parse_args()
     logging.debug(args)
@@ -93,6 +99,9 @@ def main():
 
     elif args.command == "submit":
         handle_submit(args)
+    elif args.command == "open":
+        handle_open()
+
     else:
         raise ValueError(f"Invalid command {args.command} supplied.")
     

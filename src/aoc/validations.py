@@ -1,4 +1,4 @@
-from utils import get_default_year
+from .utils import get_default_year
 
 SUPPORTED_LANGUAGES = ("python", "java", "javascript")
 

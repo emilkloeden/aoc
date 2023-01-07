@@ -2,7 +2,7 @@ import os
 from pathlib import Path
 
 import requests
-from validations import is_valid_day, is_valid_language, is_valid_year
+from aoc.validations import is_valid_day, is_valid_language, is_valid_year
 
 
 class Getter:

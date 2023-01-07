@@ -17,7 +17,18 @@ class PythonInitialiser(Initialiser):
         self.year = year
         self.location = Path(location) / f"{self.year}" / self.language
 
-        self.file_content = """import argparse
+        self.file_content = '''import argparse
+from pathlib import Path
+
+PROD = False
+
+def load_input():
+    return (Path() / "input.txt").read_text()
+
+TEST_INPUT = """
+"""
+
+INPUT = load_input() if PROD else TEST_INPUT
 
 
 def part_1() -> str:
@@ -44,7 +55,7 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-        """
+'''
 
     def initialise(self):
         print("making dirs")

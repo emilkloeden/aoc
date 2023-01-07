@@ -2,7 +2,7 @@ import os
 import requests
 from importlib.machinery import SourceFileLoader
 from pathlib import Path
-from validations import is_valid_day, is_valid_language, is_valid_year
+from .validations import is_valid_day, is_valid_language, is_valid_year
 
 class Submitter:
     def __init__(self, part: int):
