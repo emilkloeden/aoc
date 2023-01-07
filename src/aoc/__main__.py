@@ -1,19 +1,13 @@
 import argparse
 import logging
+from importlib.machinery import SourceFileLoader
 from pathlib import Path
 
 from dotenv import load_dotenv
-from aoc.getters import Getter
-from aoc.runners import Runner
-from aoc.submitters import Submitter
-from aoc.initialisers import (JavaInitialiser, JavaScriptInitialiser,
-                          PythonInitialiser)
-from aoc.openers import Opener
 
-from aoc.utils import get_default_year
+from aoc.utils import derive_language, get_default_year
 
 load_dotenv()
-days = list(range(1, 26))
 
 """
 aoc init . --year 2022 --language python
@@ -24,7 +18,7 @@ aoc submit [1,2]
 
 
 
-def parse_args():
+def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser()
     subparsers = parser.add_subparsers(dest="command")
     init_parser = subparsers.add_parser('init', help='Initialise an advent of code project/folder.')
@@ -48,6 +42,7 @@ def parse_args():
 
     return parser.parse_args()
 
+
 def is_init_valid(args) -> bool:
     max_year = get_default_year()
     if args.year < 2015 or args.year > max_year:
@@ -55,50 +50,81 @@ def is_init_valid(args) -> bool:
 
     return True
 
-def handle_init_javascript(args):
-    raise NotImplementedError
 
-def handle_init_java(args):
-    raise NotImplementedError
+def __load_plugin(language: str):
+    dir_path = Path(__file__).parent
+    plugins_dir = dir_path / "plugins"
+    language_dir = plugins_dir / language
+    try:
+        return SourceFileLoader('module', str(language_dir.resolve())).load_module()
+    except PermissionError:
+        return SourceFileLoader('module', str((language_dir / "__init__.py").resolve())).load_module()
 
-def handle_init_python(args):
-    base_dir = Path(args.location)
 
-def handle_init(args):
-    language_handlers = {
-        "python": PythonInitialiser,
-        "java": JavaInitialiser,
-        "javascript": JavaScriptInitialiser
-    }
-    return language_handlers[args.language](args.year, args.location).initialise()
+def handle_init(year: int, language: str, location: Path) -> None:
+    """Given {year}, {language} and {location}, scaffolds out a project
+    in accordance with the Initialiser class of the respective {language} plugin.
 
-def handle_get(args):
-    Getter(Path(args.location))
+    Args:
+        year (int): _description_
+        language (str): _description_
+        location (Path): _description_
+    """
+    module = __load_plugin(language)
+    i = module.Initialiser(year, location)
+    i.initialise()
 
-def handle_run(args):
-    Runner(args.part)
+    
+def handle_get(location: Path=None) -> None:
+    """Derives year and day from {location}, downloads input to {location}/input.txt
 
-def handle_submit(args):
-    Submitter(args.part)   
+    Args:
+        location (Path): Directory
+    """
+    if location is None:
+        location = Path()
+    derived_language = derive_language(location)
+    module = __load_plugin(derived_language)
+    g = module.Getter(location)
+    g.get_input()
 
-def handle_open():
-    Opener()
 
-def main():
+def handle_run(part: int) -> None:
+    derived_language = derive_language()
+    module = __load_plugin(derived_language)
+    r = module.Runner(part)
+    r.run()
+
+
+def handle_submit(part: int) -> None:
+    derived_language = derive_language()
+    module = __load_plugin(derived_language)
+    s = module.Submitter(part)   
+    s.submit()
+
+
+def handle_open() -> None:
+    derived_language = derive_language()
+    module = __load_plugin(derived_language)
+    o = module.Opener()
+    o.open()
+
+
+def main() -> None:
     args = parse_args()
     logging.debug(args)
     if args.command == "init":
-        if is_init_valid(args):
+        if (args):
             handle_init(args)
         else:
-            raise ValueError(f"Invalid arguments supplied to init command.")
+            raise ValueError(f"Invalid arguments supplied to 'init' sub-command.")
     elif args.command == "get":
-        handle_get(args)
+        handle_get(args.location)
     elif args.command == "run":
-        handle_run(args)
+        handle_run(args.part)
 
     elif args.command == "submit":
-        handle_submit(args)
+        handle_submit(args.part)
     elif args.command == "open":
         handle_open()
 
