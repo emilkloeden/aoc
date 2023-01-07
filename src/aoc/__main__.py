@@ -115,11 +115,11 @@ def main() -> None:
     logging.debug(args)
     if args.command == "init":
         if (args):
-            handle_init(args)
+            handle_init(args.year, args.language, Path(args.location))
         else:
             raise ValueError(f"Invalid arguments supplied to 'init' sub-command.")
     elif args.command == "get":
-        handle_get(args.location)
+        handle_get(Path(args.location))
     elif args.command == "run":
         handle_run(args.part)
 
